@@ -1,0 +1,2 @@
+CREATE USER airflow WITH PASSWORD 'airflow';
+ALTER ROLE airflow SUPERUSER;
