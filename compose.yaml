@@ -69,7 +69,7 @@ x-airflow-common:
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # The following line can be used to set a custom config file, stored in the local config folder
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
-    # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+    AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
     - ${AIRFLOW_PROJ_DIR}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR}/logs:/opt/airflow/logs
@@ -88,8 +88,8 @@ services:
   augur-django: 
     build: 
       context: ./pythos/augur
-    ports: 
-      - '36963:8000'    
+    ports:
+      - '36963:8000'
     depends_on:
       - postgres    
     networks: # Networks to join (Services on the same network can communicate with each other using their name)

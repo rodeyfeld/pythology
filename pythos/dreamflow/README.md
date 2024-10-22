@@ -1,3 +1,6 @@
+
+`sudo apt-get install graphviz`
+
 `/usr/bin/python3.11 -m venv venv_dreamflow`
 `source venv_dreamflow/bin/activate`
 `python -m pip install pip-tools`
@@ -5,6 +8,6 @@
 
 
 ## compile settings
+`pip-compile --output-file=requirements.txt pyproject.toml`
 `pip-compile --constraint=requirements.txt --extra=dev --output-file=dev-requirements.txt`
 
-`pip-compile --output-file=requirements.txt pyproject.toml`
