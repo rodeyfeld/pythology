@@ -1,10 +1,41 @@
-from airflow.decorators import task
 
-@task(task_id="print_the_context")
-def print_context(ds=None, **kwargs):
-    """Print the Airflow context and ds variable from the context."""
-    print(kwargs)
-    print(ds)
-    return "Whatever you return gets printed in the logs"
+import json
 
-run_this = print_context()
+import pendulum
+
+from airflow.decorators import dag, task
+from airflow.settings import SQL_ALCHEMY_CONN
+from sqlalchemy import create_engine, text
+
+
+@dag(
+    schedule=None,
+    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
+    catchup=False,
+    tags=["archive_finder"],
+)
+def process_archive_finder_results():
+    """
+    Process all archive results
+    """
+    @task()
+    def extract():
+        # Create an SQLAlchemy engine using the connection string from airflow.cfg
+        engine = create_engine(SQL_ALCHEMY_CONN)
+
+        # Define your SQL query
+        query = "SELECT * FROM archive_finder_archivefinder LIMIT 10;"
+
+        with engine.connect() as connection:
+            result = connection.execute(text(query))
+
+            # Fetch results
+            for row in result:
+                print(row)
+
+
+    extract()
+
+
+
+process_archive_finder_results()
