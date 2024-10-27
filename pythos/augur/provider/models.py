@@ -2,10 +2,6 @@ from django.db import models
 
 from core.models import Integration, IntegrationCapabilityOption, IntegrationConfigOption, TimestampModel
 
-
-
-
-
 class Provider(TimestampModel):
 
     name = models.CharField(max_length=256)

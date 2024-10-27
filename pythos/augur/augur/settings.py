@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'core.apps.CoreConfig',
     'provider.apps.ProviderConfig',
+    'augury.apps.AuguryConfig',
     'feasibility_finder.apps.FeasibilityFinderConfig',
     'archive_finder.apps.ArchiveFinderConfig',
 ]
