@@ -1,16 +1,10 @@
 
-import json
-
-import pendulum
-import requests
-
 from airflow.decorators import dag, task
 from airflow.settings import SQL_ALCHEMY_CONN
 from sqlalchemy import create_engine, text
-from archive_finder.utils import geojson_to_geosgeom, is_valid_geometry_type
-from core.models import IntegrationConfigOption, InternalIntegration, SensorType
-from archive_finder.schema import ArchiveResultSeekerAudienceResponseSchema, ArchiveFinderSeekerAudienceRequestSchema
-
+from shapely.geometry import shape
+from shapely.geometry import shape
+from shapely.wkt import dumps
     
 @staticmethod
 def format_datetime(datetime) -> str:
@@ -19,7 +13,6 @@ def format_datetime(datetime) -> str:
 
 @dag(
     schedule=None,
-    start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
     catchup=False,
     tags=["archive_finder"],
 )
@@ -27,40 +20,42 @@ def import_archive_items():
     """
     Process all archive results
     """
+
+    def is_valid_geometry_type(geojson):
+        if geojson['type'] in ("MultiPolygon",  "Polygon", "Point"):
+            return True
+        return False
+
+    def geojson_to_wkt(geojson):
+        geometry = shape(geojson)
+        return dumps(geometry)
+
     @task()
-    def extract():
-   
-    def map_sensor_to_technique(self, sensor: str):
+    def map_sensor_to_technique(sensor: str):
         if sensor in ('EO', 'MSI'):
-            return SensorType.TechniqueChoices.EO
+            return 'EO'
         elif sensor in ('SAR'):
-            return SensorType.TechniqueChoices.SAR
-        print(f"{sensor=}")
-        return SensorType.TechniqueChoices.UNKNOWN
+            return'SAR'
+        return 'UNKNOWN'
 
-
-    def create_archive_results(self, seeker_results: ArchiveResultSeekerAudienceResponseSchema):
-        seeker_run_id = seeker_results.id
+    @task()
+    def create_archive_items(seeker_results: ArchiveResultSeekerAudienceResponseSchema):
+        archive_results = []
         for catalog in seeker_results.catalogs:
             catalog_name = catalog['name']
-            provider, _ = Provider.objects.get_or_create(
-                name=catalog_name
-            )
+            provider =catalog_name
             for catalog_collection in catalog['collections']:
                 collection_name = catalog_collection['name']
                 features = catalog_collection['features'] if catalog_collection['features'] else []
                 for feature in features:
                     geometry_geojson = feature['geometry']
-                    if self.is_valid_geojson_result(geometry_geojson):
-                        geometry = geojson_to_geosgeom(geometry_geojson)
+                    if is_valid_geometry_type(geometry_geojson):
+                        wkt = geojson_to_wkt(geometry_geojson)
 
                         sensor_type_str = feature['sensor_type']
-                        technique = self.map_sensor_to_technique(sensor_type_str)
-                        sensor_type, _ = SensorType.objects.get_or_create(
-                            technique=technique
-                        )
+                        technique = map_sensor_to_technique(sensor_type_str)
                         archive_result = ArchiveItem.create(
-                            sensor_type=sensor_type,
+                            technique=technique,
                             external_id=feature['id'],
                             geometry=geometry,
                             collection=collection_name,
@@ -69,27 +64,31 @@ def import_archive_items():
                             end_date=feature['end_date'],
                             metadata=str(feature['properties']),
                             )
+                        archive_results.append(archive_result)
 
-    def get_archive_results(self):
+    def get_archive_results():
 
-        payload = ArchiveFinderSeekerAudienceRequestSchema(
-            archive_finder_id=self.archive_finder.pk,
-            start_date=f"{Seeker.format_date(self.archive_finder.start_date)}", 
-            end_date=f"{Seeker.format_date(self.archive_finder.end_date)}", 
-            sortby="datetime",
-        )
-        payload_json = payload.model_dump_json()
-        
-        stac_endpoint_config = self.internal_integration.config_options.all().get(key=IntegrationConfigOption.ConfigFieldChoices.STAC_ENDPOINT)
-        url = stac_endpoint_config.value
-        response = requests.post(url=url, json=payload_json)
-        response_data = response.json()
-        seeker_results = ArchiveResultSeekerAudienceResponseSchema(
-            archive_finder_id=response_data['archive_finder_id'],
-            id=response_data['id'],
-            catalogs=response_data['catalogs']
-        )
-        self.create_archive_results(seeker_results=seeker_results)
+        myclient = pymongo.MongoClient("mongodb://root:example@localhost:27017/")
+        db = myclient["Copernicus"]
+        collection_names = ["SENTINEL-1", "SENTINEL-2"]
+        for collection_name in collection_names:
+            for feature in db[collection_name].find():
+                geometry_geojson = feature['geometry']
+                if is_valid_geojson_result(geometry_geojson):
+                    geometry = geojson_to_geosgeom(geometry_geojson)
+                    sensor_type_str = feature['sensor_type']
+                    technique = map_sensor_to_technique(sensor_type_str)
+                    archive_item = ArchiveItem.objects.bulk_create(
+                        external_id=feature['id'],
+                        geometry=geometry,
+                        collection=collection_name,
+                        sensor_type=technique,
+                        thumbnail=feature['assets']['thumbnail']["href"],
+                        start_date=feature['start_date'].replace(tzinfo=timezone.utc),
+                        end_date=feature['end_date'].replace(tzinfo=timezone.utc),
+                        metadata=str(feature['properties']),
+                    )
+        create_archive_items(seeker_results=seeker_results)
 
 
-process_archive_finder_results()
+import_archive_items()
