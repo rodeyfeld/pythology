@@ -36,4 +36,4 @@ chmod 600 ~/.pg_service.conf
 `/usr/bin/python3.11 -m venv venv_augur`
 `source venv_augur/bin/activate`
 `python -m pip install pip-tools`
-
+`pip-sync`

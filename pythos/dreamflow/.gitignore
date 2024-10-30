@@ -167,3 +167,5 @@ cython_debug/
 ## Airflow/Dreamflow
 airflow-webserver.pid
 logs/
+
+*/scheduler/latest/*
