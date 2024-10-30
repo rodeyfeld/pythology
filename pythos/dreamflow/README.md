@@ -8,6 +8,5 @@
 
 
 ## compile settings
-`pip-compile --output-file=requirements.txt pyproject.toml`
-`pip-compile --constraint=requirements.txt --extra=dev --output-file=dev-requirements.txt`
-
+This project uses a constraints file. 
+`pip-compile --output-file=requirements.txt pyproject.toml --constraint constraints.tx`

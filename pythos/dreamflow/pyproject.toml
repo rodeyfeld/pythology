@@ -6,13 +6,7 @@ authors = [
     {name = "eric rodefeld",email = "eric.d.rodefeld@gmail.com"},
 ]
 dependencies = [
-    "apache-airflow==2.10.2",
-    "psycopg2-binary==2.9.10",
-    "apache-airflow-providers-celery==3.8.3",
-    "apache-airflow-providers-common-sql==1.18.0",
-    "apache-airflow-providers-postgres==5.13.1",
-    "apache-airflow-providers-redis==3.8.0",
-    "apache-airflow-providers-mongo==4.2.1",
+    "apache-airflow[postgres,celery,redis,mongo]==2.10.2",
     "shapely==2.0.6",
 ]
 requires-python = "==3.11.*"
