@@ -5,7 +5,7 @@ export AIRFLOW_UID=1000
 export AIRFLOW_PROJ_DIR=$HOME/universe/pythology/pythos/dreamflow
 export AIRFLOW_HOME=$HOME/universe/pythology/pythos/dreamflow
 export AIRFLOW_CONN_MONGO_DEFAULT=mongodb://root:example@localhost:27017/
-export AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql+psycopg2://airflow:airflow@localhost:5432/lore
+export AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://airflow:airflow@localhost:5432/lore
 ```
 
 `sudo apt-get install graphviz`

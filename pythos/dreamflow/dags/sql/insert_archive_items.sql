@@ -2,6 +2,7 @@ INSERT INTO "archive_finder_archiveitem"
 (
     "external_id",
     "geometry",
+    
     "collection",
     "sensor_type",
     "thumbnail",
