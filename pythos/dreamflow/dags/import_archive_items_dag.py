@@ -39,18 +39,6 @@ def import_archive_items():
     Process all archive results
     """
 
-    def insert_to_postgres(archive_items):
-        # hook = PostgresHook(postgres_conn_id='postgres_default')
-
-        inserted_archive_items = SQLExecuteQueryOperator(
-            conn_id='postgres_default',
-            task_id="all_archive_finders",
-            sql="sql/insert_archiove_items.sql",
-            parameters=archive_items,
-            show_return_value_in_logs=True,
-        )
-        return inserted_archive_items
-
     def fetch_from_mongo(date_range):
         hook = MongoHook(mongo_conn_id='mongo_default')
         client = hook.get_conn()
@@ -87,12 +75,17 @@ def import_archive_items():
 
     @task
     def get_date_ranges():
-        initial_datetime = datetime(year=2014,
+        initial_datetime = datetime(year=2015,
                                     month=1,
                                     day=1,
                                     second=1
                                 )
-        present_datetime = datetime.now()
+        present_datetime = datetime(year=2016,
+                                    month=1,
+                                    day=1,
+                                    second=1
+                                )
+        # present_datetime = datetime.now()
         day_difference = (present_datetime - initial_datetime).days
 
         curr_datetime = datetime(year=initial_datetime.year, month=initial_datetime.month, day=initial_datetime.day)
@@ -111,8 +104,16 @@ def import_archive_items():
     @task
     def consumer(date_range):
         mongo_archive_items = fetch_from_mongo(date_range)
-        postgres_results = insert_to_postgres(mongo_archive_items)
-        return postgres_results
+        print(mongo_archive_items)
+        for archive_item in mongo_archive_items:
+                
+            SQLExecuteQueryOperator(
+                        conn_id='postgres_default',
+                        task_id="all_archive_finders",
+                        sql="sql/insert_archiove_items.sql",
+                        params=archive_item,
+                        show_return_value_in_logs=True,
+                    )
 
     date_ranges = get_date_ranges()
     consumer.expand(date_range=date_ranges)

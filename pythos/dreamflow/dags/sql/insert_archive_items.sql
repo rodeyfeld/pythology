@@ -1,4 +1,22 @@
-INSERT INTO "archive_finder_archivefinder" 
-("created", "modified", "name", "geometry", "start_date", "end_date", "is_active", "status", "rules")
-VALUES %s
-RETURNING "archive_finder_archivefinder"."id";
+INSERT INTO "archive_finder_archiveitem" 
+(
+    "external_id",
+    "geometry",
+    "collection",
+    "sensor_type",
+    "thumbnail",
+    "start_date",
+    "end_date",
+    "metadata"
+)
+VALUES (
+    {{ params.external_id }},
+    {{ params.geometry }},
+    {{ params.collection }},
+    {{ params.sensor_type }},
+    {{ params.thumbnail }},
+    {{ params.start_date }},
+    {{ params.end_date }},
+    {{ params.metadata }}
+)
+RETURNING "archive_finder_archiveitem"."id";
