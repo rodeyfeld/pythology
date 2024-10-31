@@ -105,12 +105,11 @@ def import_archive_items():
     def etl(date_range):
             
 
-        @task
+        @task(pool="local_pool")
         def insert_to_postgres(archive_items):
             # hook = PostgresHook(postgres_conn_id='postgres_default')
             for archive_item in archive_items[:5]:
                 sql_query = build_insert_query(archive_item)
-                print(sql_query)
                 insert_task = SQLExecuteQueryOperator(
                     conn_id="postgres_default",
                     task_id=f"insert_archive_item_{archive_item.get('external_id')}",
@@ -119,7 +118,7 @@ def import_archive_items():
                 )
                 insert_task.execute(context={})
 
-        @task
+        @task(pool="local_pool")
         def fetch_from_mongo(date_range):
             hook = MongoHook(mongo_conn_id="mongo_default")
             client = hook.get_conn()
@@ -165,8 +164,8 @@ def import_archive_items():
                                     day=1,
                                     second=1
                                 )
-        present_datetime = datetime(year=2015,
-                                    month=6,
+        present_datetime = datetime(year=2017,
+                                    month=1,
                                     day=1,
                                     second=1
                                 )
