@@ -11,7 +11,7 @@ INSERT INTO "archive_finder_archiveitem"
 )
 VALUES (
     {{ params.external_id }},
-    {{ params.geometry }},
+    ST_GeomFromText({{ params.geometry }}),
     {{ params.collection }},
     {{ params.sensor_type }},
     {{ params.thumbnail }},
@@ -19,4 +19,5 @@ VALUES (
     {{ params.end_date }},
     {{ params.metadata }}
 )
-RETURNING "archive_finder_archiveitem"."id";
+RETURNING "archive_finder_archiveitem"."id"
+;
