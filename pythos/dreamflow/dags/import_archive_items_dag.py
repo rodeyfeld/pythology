@@ -7,7 +7,8 @@ from airflow.providers.mongo.hooks.mongo import MongoHook
 from shapely.geometry import shape
 from shapely.geometry import shape
 from shapely.wkt import dumps
-    
+import uuid
+
 @staticmethod
 def format_datetime(datetime) -> str:
     return datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -105,20 +106,18 @@ def import_archive_items():
     def etl(date_range):
             
 
-        @task(pool="local_pool")
+        @task(pool="postgres_pool")
         def insert_to_postgres(archive_items):
             # hook = PostgresHook(postgres_conn_id='postgres_default')
-            for archive_item in archive_items[:5]:
-                sql_query = build_insert_query(archive_item)
-                insert_task = SQLExecuteQueryOperator(
-                    conn_id="postgres_default",
-                    task_id=f"insert_archive_item_{archive_item.get('external_id')}",
-                    sql=sql_query,
-                    show_return_value_in_logs=True,
-                )
-                insert_task.execute(context={})
+            sql_queries = ' '.join([build_insert_query(archive_item) for archive_item in archive_items])
+            insert_task = SQLExecuteQueryOperator(
+                conn_id="postgres_default",
+                task_id=f"insert_archive_item_{uuid.uuid4().hex}",
+                sql=sql_queries,
+            )
+            insert_task.execute(context={})
 
-        @task(pool="local_pool")
+        @task(pool="mongo_pool")
         def fetch_from_mongo(date_range):
             hook = MongoHook(mongo_conn_id="mongo_default")
             client = hook.get_conn()
@@ -164,7 +163,7 @@ def import_archive_items():
                                     day=1,
                                     second=1
                                 )
-        present_datetime = datetime(year=2017,
+        present_datetime = datetime(year=2025,
                                     month=1,
                                     day=1,
                                     second=1
@@ -174,7 +173,7 @@ def import_archive_items():
 
         curr_datetime = datetime(year=initial_datetime.year, month=initial_datetime.month, day=initial_datetime.day)
         date_ranges = []
-        stepper = 30
+        stepper = 15
         for day_step in range(1, day_difference // stepper):
             end_date = initial_datetime + timedelta(days=day_step * stepper)
             print(f"Getting results for {curr_datetime} | {end_date}")
