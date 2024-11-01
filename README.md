@@ -2,3 +2,8 @@ echo -e "AIRFLOW_UID=$(id -u)" > .env
 
 docker compose up airflow-init
 docker compose up
+
+
+
+
+![alt text](image.png)

@@ -4,7 +4,9 @@ import json
 from airflow.decorators import dag, task, task_group
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.providers.mongo.hooks.mongo import MongoHook
-from shapely.geometry import shape
+from bson.json_util import dumps as bson_dumps
+
+from bson.json_util import loads as bson_loads
 from shapely.geometry import shape
 from shapely.wkt import dumps
 import uuid
@@ -117,22 +119,12 @@ def import_archive_items():
             )
             insert_task.execute(context={})
 
-        @task(pool="mongo_pool")
-        def fetch_from_mongo(date_range):
-            hook = MongoHook(mongo_conn_id="mongo_default")
-            client = hook.get_conn()
-            db = client["Copernicus"]
-            collection_names = ["SENTINEL-1", "SENTINEL-2"]
-            
+
+        @task(pool="default_pool")
+        def process_collections(collections):
             archive_items = []
-            for collection_name in collection_names:
-                features = db[collection_name].find(
-                    {
-                        "start_date": {"$gt": date_range["start_date"]},
-                        "end_date": {"$lte": date_range["end_date"]},
-                    }
-                )
-                for feature in features:
+            for collection in collections:
+                for feature in bson_loads(collection["features"]):
                     geometry_geojson = feature['geometry']
                     if is_valid_geometry_type(geometry_geojson):
                         geometry = geojson_to_wkt(geometry_geojson)
@@ -142,7 +134,7 @@ def import_archive_items():
                             "external_id" : feature['id'],
                             "provider": "copernicus",
                             "geometry" : geometry,
-                            "collection" : collection_name,
+                            "collection" : collection["collection_name"],
                             "sensor_type" : technique,
                             "thumbnail" : feature['assets']['thumbnail']["href"],
                             "start_date" : feature['start_date'].replace(tzinfo=timezone.utc),
@@ -151,10 +143,30 @@ def import_archive_items():
                         }
 
                         archive_items.append(archive_item)
-            print(f"Archive Item Count: {len(archive_items)}")
             return archive_items
+
+        @task(pool="mongo_pool")
+        def fetch_from_mongo(date_range):
+            hook = MongoHook(mongo_conn_id="mongo_default")
+            client = hook.get_conn()
+            db = client["Copernicus"]
+            collections = [{"collection_name": "SENTINEL-1", "features": []}, 
+                                {"collection_name": "SENTINEL-2", "features": []},
+                            ]
+            
+            for collection in collections:
+                results = db[collection["collection_name"]].find(
+                    {
+                        "start_date": {"$gt": date_range["start_date"]},
+                        "end_date": {"$lte": date_range["end_date"]},
+                    }
+                )
+                
+                collection["features"] = bson_dumps(results)
+            return collections
+
         
-        insert_to_postgres(fetch_from_mongo(date_range))
+        insert_to_postgres(process_collections(fetch_from_mongo(date_range)))
 
     @task
     def get_date_ranges():
