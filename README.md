@@ -5,12 +5,14 @@
 Currently all python projects (pythos) are set to use `pip-tools`. 
 
 General use is follows:
-`cd pythos/<project>`
-`source .env`
-`/usr/bin/python3.11 -m venv venv_<project>`
-`source <project>/bin/activate`
-`python -m pip install pip-tools`
-`pip-sync`
+```
+cd pythos/<project>
+source .env
+/usr/bin/python3.11 -m venv venv_<project>
+source <project>/bin/activate
+python -m pip install pip-tools
+pip-sync
+```
 
 ### Adding dependencies
 
