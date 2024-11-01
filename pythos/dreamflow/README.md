@@ -1,4 +1,9 @@
 
+# dreamflow - Airflow Based DAG Runner
+
+
+## Local setup
+
 ### create .env file 
 ```
 export AIRFLOW_UID=1000
@@ -12,6 +17,13 @@ export AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://airflow:airflow@localhost:5432
 `sudo apt-get install graphviz`
 
 
+## To run
+- ```airflow standalone```
+- Navigate to `localhost:8080`
+- Use password provided in logs
+
 ### compile settings
 This project uses a constraints file required by airflow. 
 `pip-compile --output-file=requirements.txt pyproject.toml --constraint constraints.tx`
+
+

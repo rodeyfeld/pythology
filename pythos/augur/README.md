@@ -32,3 +32,13 @@ Ensure the permissions for both .pg_passfile and .pg_service.conf are set correc
 chmod 600 ~/.pg_passfile
 chmod 600 ~/.pg_service.conf
 ```
+
+
+## local setup
+
+Run the commands found in the base README.md to activate virtualenvironment.
+
+```
+python manage.py migrate
+python manage.py runserver
+```
