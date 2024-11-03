@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import SensorType, TimestampModel
 from provider.models import Collection, Order
+from augury.models import ArchiveItem
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import GEOSGeometry
 
@@ -28,9 +29,15 @@ class ArchiveFinder(TimestampModel):
             return self.geometry.buffer(MINIMUM_BOUNDING_BOX_KM2)
         return self.geometry
 
+
+class ArchiveLookup(TimestampModel):
+
+    archive_item = models.ForeignKey(ArchiveItem, null=True, on_delete=models.SET_NULL)
+    archive_finder = models.ForeignKey(ArchiveFinder, on_delete=models.CASCADE)
+
 class ArchiveResult(TimestampModel):
 
-    archive_finder = models.ForeignKey(ArchiveFinder, on_delete=models.CASCADE)
+    archive_lookup = models.ForeignKey(ArchiveLookup, null=True, on_delete=models.SET_NULL)
     external_id = models.CharField(blank=True, default='', max_length=2048)
     seeker_run_id = models.CharField(blank=True, default='', max_length=2048)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)

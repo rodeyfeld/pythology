@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from core.admin import TimeStampAdminMixin
-from archive_finder.models import ArchiveFinder, ArchiveOrder, ArchiveResult
+from archive_finder.models import ArchiveFinder, ArchiveLookup, ArchiveOrder, ArchiveResult
 
 
 @admin.register(ArchiveFinder)
@@ -13,11 +13,18 @@ class ArchiveFinderAdmin(admin.ModelAdmin, TimeStampAdminMixin):
         "is_active",
      ] + TimeStampAdminMixin.list_display
 
+@admin.register(ArchiveLookup)
+class ArchiveLookupAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+    list_display = [
+        "archive_finder",
+        "archive_item",
+     ] + TimeStampAdminMixin.list_display
+
 
 @admin.register(ArchiveResult)
 class ArchiveResultAdmin(admin.ModelAdmin, TimeStampAdminMixin):
     list_display = [
-        "archive_finder",
+        "archive_lookup",
         "external_id",
         "seeker_run_id",
         "collection",
