@@ -107,7 +107,6 @@ def import_archive_items():
     @task_group
     def etl(date_range):
             
-
         @task(pool="postgres_pool")
         def insert_to_postgres(archive_items):
             # hook = PostgresHook(postgres_conn_id='postgres_default')
