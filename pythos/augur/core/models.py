@@ -9,18 +9,25 @@ class TimestampModel(models.Model):
     class Meta:
         abstract = True
     
-class SensorType(TimestampModel):
+class Sensor(TimestampModel):
 
-    class TechniqueChoices(models.TextChoices):
+    class Technique(models.TextChoices):
         SAR = "SAR"
         EO = "EO"
         UNKNOWN = "UNKNOWN"
 
-    technique = models.CharField(max_length=128, choices=TechniqueChoices, default=TechniqueChoices.UNKNOWN)
-
+    technique = models.CharField(max_length=128, choices=Technique, default=Technique.UNKNOWN)
+    name = models.CharField(max_length=128, blank=True, default='')
+    
     def __str__(self) -> str:
         return f"{self.technique=}"
     
+    def map_sensor_name_to_technique(self, name: str):
+        if name in ('EO', 'MSI'):
+            return Sensor.Technique.EO
+        elif name in ('SAR'):
+            return Sensor.Technique.SAR
+        return Sensor.Technique.UNKNOWN
 
 class Organization(TimestampModel):
     name = models.CharField(max_length=256)

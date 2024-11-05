@@ -18,9 +18,9 @@ class ImageryRequestSchema(ModelSchema):
         model = ImageryRequest
         fields = "__all__"     
 
-class SensorTypeSchema(ModelSchema):
+class SensorSchema(ModelSchema):
     class Meta:
-        model = SensorType
+        model = Sensor
         fields = "__all__"
 
 class ImageryRequestCreateRequestSchema(Schema):

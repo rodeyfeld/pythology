@@ -1,11 +1,11 @@
 import json
 from typing import List
-from geojson_pydantic import Polygon
 from ninja import Router
 from archive_finder.utils import geojson_to_geosgeom
+from augury.schema import DreamStatusResponseSchema
 from core.models import User
 from archive_finder.factories import ArchiveFinderFactory
-from archive_finder.models import ArchiveFinder, ArchiveResult
+from archive_finder.models import ArchiveFinder, Study
 from archive_finder.schema import (
     ArchiveFinderCreateRequestSchema,   
     ArchiveFinderCreateResponseSchema,  
@@ -14,7 +14,7 @@ from archive_finder.schema import (
     ArchiveFinderSeekerStatusResponseSchema,    
     ArchiveResultSchema,
 )
-from archive_finder.seekers.internal.seeker import Seeker
+from archive_finder.studies.study import Seeker
 
 router = Router(tags=["archive search"])
 
@@ -57,20 +57,23 @@ def post_finder_execute(request, archive_finder_create_schema: ArchiveFinderSeek
     archive_finder_id = archive_finder_create_schema.archive_finder_id
     archive_finder = ArchiveFinder.objects.get(id=archive_finder_id)
 
-    seeker = Seeker(archive_finder)
-    seeker.seek()
+    study = Study.objects.create()
+    seeker = Seeker()
+    dream = seeker.execute(study)
     
-    response = ArchiveFinderSeekerStatusResponseSchema(
-        status=archive_finder.status
+    response = DreamStatusResponseSchema(
+        status=dream.status
     )
     return response
 
-@router.get('/finders/status/{archive_finder_id}',  response=ArchiveFinderSeekerStatusResponseSchema)
+@router.get('/finders/status/{archive_finder_id}/{study_name}',  response=DreamStatusResponseSchema)
 def get_finder_status(request, archive_finder_id):
     archive_finder = ArchiveFinder.objects.get(id=archive_finder_id)
-
-    response = ArchiveFinderSeekerStatusResponseSchema(
-        status=archive_finder.status
+    study = Study.objects.filter(archive_finder=archive_finder).latest()
+    seeker = study.seeker
+    dream = seeker.poll(study)
+    response = DreamStatusResponseSchema(
+        status=dream.status
     )
     return response
 

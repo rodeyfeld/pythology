@@ -2,19 +2,14 @@
 from datetime import timedelta, datetime, timezone
 import json
 from airflow.decorators import dag, task, task_group
-
 from airflow.operators.python import get_current_context
-from airflow.models.param import Param
+from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
-
-
 import uuid
 
-@staticmethod
-def format_datetime(datetime) -> str:
-    return datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-def build_execute_query(archive_finder_pk, run_id):
+def build_execute_query(archive_finder_pk, run_id, run_datetime):
+    
     sql = f"""
     CREATE TABLE archive_seeker_{run_id} AS
     SELECT 
@@ -31,10 +26,12 @@ def build_execute_query(archive_finder_pk, run_id):
     AND archive_finders.id = {archive_finder_pk}
     ;
 
-    INSERT INTO archive_finder_archivelookup (created, modified, archive_finder_id, archive_item_id)
+    INSERT INTO archive_finder_archivelookup (created, modified, seeker_id, seeker_datetime, archive_finder_id, archive_item_id)
     SELECT
         CURRENT_TIMESTAMP as created,
         CURRENT_TIMESTAMP as modified,
+        {run_id},
+        {run_datetime},
         archive_finder_id,
         archive_item_id
     FROM archive_seeker_{run_id}
@@ -51,7 +48,7 @@ default_params ={"archive_finder_pk": 2}
     tags=["archive_finder"],
     params=default_params
 )
-def execute_archive_finder():
+def imagery_finder(run_id):
     """
     Process all archive results
     """
@@ -68,16 +65,31 @@ def execute_archive_finder():
         @task(pool="postgres_pool")
         def create_archive_finder_items():
             archive_finder_pk = get_archive_finder_pk()
-            run_id = uuid.uuid4().hex
+            run_datetime = datetime.now().isoformat()
             execute_query = SQLExecuteQueryOperator(
                 conn_id="postgres_default",
                 task_id=f"execute_archive_finder_{archive_finder_pk}_{run_id}",
-                sql=build_execute_query(archive_finder_pk=archive_finder_pk, run_id=run_id),
+                sql=build_execute_query(archive_finder_pk=archive_finder_pk, run_id=run_id, run_datetime=run_datetime),
             )
             execute_query.execute(context={})
 
-        create_archive_finder_items()
+
+        @task
+        def notify_augur():
+            archive_finder_pk = get_archive_finder_pk()
+            poll_archive_finder = SimpleHttpOperator(
+                http_conn_id="http_augur_connection",
+                task_id=f"poll_archive_finder_{archive_finder_pk}_{run_id}",
+                endpoint=f"api/archive_finder/finders/status/{archive_finder_pk}",
+                method="GET",
+            )
+            poll_archive_finder.execute(context={})
+
+        
+        create_archive_finder_items() 
+        notify_augur()
+        
 
     etl()
 
-execute_archive_finder()
+imagery_finder(uuid.uuid4().hex)

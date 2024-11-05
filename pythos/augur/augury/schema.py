@@ -36,16 +36,10 @@ class ArchiveItemSchema(Schema):
     @staticmethod
     def resolve_archive_finder_id(obj: ArchiveResult):
         return obj.pk        
-    
-class AudienceRequestSchema(Schema):
-    start_date: datetime 
-    end_date: datetime 
-    sortby: str
 
 
-class AudienceResponseSchema(Schema):
-    id: str
-    catalogs: list[dict[str, Any]] #TODO Formalize this schema
+class DreamStatusResponseSchema(Schema):
+    status: str
 
 
 
