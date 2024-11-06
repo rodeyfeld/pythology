@@ -15,35 +15,6 @@ import uuid
 def format_datetime(datetime) -> str:
     return datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-
-    # INSERT INTO "augury_archiveitem" 
-    # (
-    #     "created",
-    #     "modified",
-    #     "external_id",
-    #     "provider",
-    #     "geometry",
-    #     "collection",
-    #     "sensor_type",
-    #     "thumbnail",
-    #     "start_date",
-    #     "end_date",
-    #     "metadata"
-    # )
-    # VALUES (
-    #     CURRENT_TIMESTAMP,
-    #     CURRENT_TIMESTAMP,
-    #     'copernicus',        
-    #     'S1A_IW_GRDH_1SSV_20150106T000528_20150106T000557_004043_004E0B_7D52_COG.SAFE', 
-    #     ST_GeomFromText('POLYGON ((92.3164825439453125 45.7546157836914062, 89.0541152954101562 46.1506271362304688, 89.4433212280273438 47.8846588134765625, 92.8128738403320312 47.4881668090820312, 92.3164825439453125 45.7546157836914062))'),  -- String value for geometry
-    #     'SENTINEL-1', 
-    #     'SAR',  
-    #     'https://catalogue.dataspace.copernicus.eu/odata/v1/Assets(be736ab9-f336-4bb4-ac93-c377385562c6)/$value', 
-    #     '2015-01-06T00:05:28.320000+00:00',  
-    #     '2015-01-06T00:05:57.254000+00:00',
-    #     'test_mata'
-
-    # );
 def build_insert_query(archive_item):
     sql = f"""
     INSERT INTO "augury_archiveitem" 
@@ -54,7 +25,7 @@ def build_insert_query(archive_item):
         "provider",
         "geometry",
         "collection",
-        "sensor_type",
+        "sensor",
         "thumbnail",
         "start_date",
         "end_date",
@@ -67,7 +38,7 @@ def build_insert_query(archive_item):
         '{archive_item["provider"]}',
         ST_GeomFromText('{archive_item["geometry"]}'),
         '{archive_item["collection"]}',  
-        '{archive_item["sensor_type"]}',  
+        '{archive_item["sensor"]}',  
         '{archive_item["thumbnail"]}', 
         '{archive_item["start_date"].isoformat()}', 
         '{archive_item["end_date"].isoformat()}',
@@ -127,14 +98,14 @@ def import_archive_items():
                     geometry_geojson = feature['geometry']
                     if is_valid_geometry_type(geometry_geojson):
                         geometry = geojson_to_wkt(geometry_geojson)
-                        sensor_type_str = feature['sensor_type']
-                        technique = map_sensor_to_technique(sensor_type_str)
+                        sensor = feature['sensor']
+                        technique = map_sensor_to_technique(sensor)
                         archive_item = {
                             "external_id" : feature['id'],
                             "provider": "copernicus",
                             "geometry" : geometry,
                             "collection" : collection["collection_name"],
-                            "sensor_type" : technique,
+                            "sensor" : technique,
                             "thumbnail" : feature['assets']['thumbnail']["href"],
                             "start_date" : feature['start_date'].replace(tzinfo=timezone.utc),
                             "end_date" : feature['end_date'].replace(tzinfo=timezone.utc),

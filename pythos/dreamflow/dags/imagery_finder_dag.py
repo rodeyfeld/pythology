@@ -77,10 +77,11 @@ def imagery_finder(run_id):
         @task
         def notify_augur():
             archive_finder_pk = get_archive_finder_pk()
+            
             poll_archive_finder = SimpleHttpOperator(
                 http_conn_id="http_augur_connection",
                 task_id=f"poll_archive_finder_{archive_finder_pk}_{run_id}",
-                endpoint=f"api/archive_finder/finders/status/{archive_finder_pk}",
+                endpoint=f"api/archive_finder/finders/study/process/{archive_finder_pk}",
                 method="GET",
             )
             poll_archive_finder.execute(context={})

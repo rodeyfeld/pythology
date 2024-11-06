@@ -1,6 +1,6 @@
 
 from ninja import ModelSchema, Schema
-from core.models import ImageryRequest, Organization, SensorType, User
+from core.models import ImageryRequest, Organization, Sensor, User
 
 
 class OrganizationSchema(ModelSchema):

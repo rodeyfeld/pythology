@@ -4,7 +4,7 @@ INSERT INTO "archive_finder_archiveitem"
     "geometry",
     
     "collection",
-    "sensor_type",
+    "sensor",
     "thumbnail",
     "start_date",
     "end_date",
@@ -14,7 +14,7 @@ VALUES (
     {{ params.external_id }},
     ST_GeomFromText({{ params.geometry }}),
     {{ params.collection }},
-    {{ params.sensor_type }},
+    {{ params.sensor }},
     {{ params.thumbnail }},
     {{ params.start_date }},
     {{ params.end_date }},

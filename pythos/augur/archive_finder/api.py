@@ -4,39 +4,32 @@ from ninja import Router
 from archive_finder.utils import geojson_to_geosgeom
 from augury.schema import DreamStatusResponseSchema
 from core.models import User
-from archive_finder.factories import ArchiveFinderFactory
-from archive_finder.models import ArchiveFinder, Study
+from archive_finder.models import ArchiveFinder, ArchiveStudy
 from archive_finder.schema import (
     ArchiveFinderCreateRequestSchema,   
     ArchiveFinderCreateResponseSchema,  
-    ArchiveFinderSeekerRequestSchema,   
     ArchiveFinderSchema,    
-    ArchiveFinderSeekerStatusResponseSchema,    
-    ArchiveResultSchema,
+    ArchiveStudyResponseSchema
 )
-from archive_finder.studies.study import Seeker
 
 router = Router(tags=["archive search"])
 
 @router.get('/finders', response=List[ArchiveFinderSchema])
-def get_all_archive_finders(request):
+def archive_finders(request):
     queryset = ArchiveFinder.objects.all()
     return list(queryset)
 
 @router.get('/finders/id/{archive_finder_id}', response=ArchiveFinderSchema)
-def get_archive_finder_by_id(request, archive_finder_id):
+def archive_finder_by_id(request, archive_finder_id):
     queryset = ArchiveFinder.objects.get(id=archive_finder_id)
     return queryset
 
 @router.post('/finders/create',  response=ArchiveFinderCreateResponseSchema)
-def post_create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequestSchema):
+def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequestSchema):
     user = User.objects.all().first()
-
-
-    # if is_valid_geometry_type(archive_finder_create_schema.geometry):
     geometry = geojson_to_geosgeom(archive_finder_create_schema.geometry)
 
-    archive_finder = ArchiveFinderFactory.create(
+    archive_finder = ArchiveFinder.objects.create(
         name=archive_finder_create_schema.name,
         geometry=geometry.wkt,
         start_date = archive_finder_create_schema.start_date,
@@ -51,43 +44,59 @@ def post_create_finder(request, archive_finder_create_schema: ArchiveFinderCreat
     )
     return response
 
-@router.post('/finders/execute',  response=ArchiveFinderSeekerStatusResponseSchema)
-def post_finder_execute(request, archive_finder_create_schema: ArchiveFinderSeekerRequestSchema):
+@router.post('/finders/execute',  response=DreamStatusResponseSchema)
+def finder_execute(request,  archive_study: ArchiveStudyResponseSchema):
 
-    archive_finder_id = archive_finder_create_schema.archive_finder_id
+    archive_finder_id = archive_study.archive_finder_id
     archive_finder = ArchiveFinder.objects.get(id=archive_finder_id)
 
-    study = Study.objects.create()
-    seeker = Seeker()
-    dream = seeker.execute(study)
+    name = archive_study.name
+    study = ArchiveStudy.objects.create(archive_finder=archive_finder, name=name)
+    seeker = study.seeker
+    dream = seeker.seek(study)
     
     response = DreamStatusResponseSchema(
         status=dream.status
     )
     return response
 
-@router.get('/finders/status/{archive_finder_id}/{study_name}',  response=DreamStatusResponseSchema)
-def get_finder_status(request, archive_finder_id):
+@router.get('/finders/study/{archive_finder_id}',  response=DreamStatusResponseSchema)
+def finder_status(request, archive_finder_id):
     archive_finder = ArchiveFinder.objects.get(id=archive_finder_id)
-    study = Study.objects.filter(archive_finder=archive_finder).latest()
+    
+    study = ArchiveStudy.objects.filter(archive_finder=archive_finder).latest()
     seeker = study.seeker
     dream = seeker.poll(study)
+
     response = DreamStatusResponseSchema(
         status=dream.status
     )
     return response
 
-@router.get('/results', response=List[ArchiveResultSchema])
-def get_all_archive_results(request):
-    queryset = ArchiveResult.objects.all()
-    return list(queryset)
+@router.get('/finders/study/{archive_finder_id}/{name}',  response=DreamStatusResponseSchema)
+def finder_study_status(request, archive_finder_id, name):
+    archive_finder = ArchiveFinder.objects.get(id=archive_finder_id)
+    
+    study = ArchiveStudy.objects.filter(archive_finder=archive_finder, name=name).latest()
+    seeker = study.seeker
+    dream = seeker.poll(study)
 
-@router.get('/results/id/result/{archive_result_id}', response=ArchiveResultSchema)
-def get_archive_result_by_id(request, archive_result_id):
-    queryset = ArchiveResult.objects.get(id=archive_result_id)
-    return queryset
+    response = DreamStatusResponseSchema(
+        status=dream.status
+    )
+    return response
 
-@router.get('/results/id/finder/{archive_finder_id}', response=List[ArchiveResultSchema])
-def get_archive_results_by_archive_finder_id(request, archive_finder_id):
-    queryset = ArchiveResult.objects.filter(archive_finder__id=archive_finder_id)
-    return list(queryset)
+@router.post('/finders/study/process',  response=DreamStatusResponseSchema)
+def finder_study_process(request, archive_study: ArchiveStudyResponseSchema):
+    archive_finder_id = archive_study.archive_finder_id
+    archive_finder = ArchiveFinder.objects.get(id=archive_finder_id)
+
+    name = archive_study.name
+    study = ArchiveStudy.objects.filter(archive_finder=archive_finder, name=name).latest()
+    diviner = study.diviner
+    dream = diviner.divine(study)
+
+    response = DreamStatusResponseSchema(
+        status=dream.status
+    )
+    return response

@@ -21,7 +21,7 @@ class ImageryLookupDiviner(Diviner):
                 provider=provider
             )
             sensor, _ = Sensor.objects.get_or_create(
-                name=archive_item.sensor_type
+                name=archive_item.sensor
             )
             _ = ImageryLookupResult.objects.create(
                 imagery_lookup_study=self,
