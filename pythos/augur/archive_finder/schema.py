@@ -34,10 +34,8 @@ class ArchiveFinderRules(Schema):
     sar_resolution_min_cm: Optional[int|NoneType] = None
     cloud_coverage_pct: Optional[int|NoneType] = None
 
-
 class ArchiveFinderMetaData(Schema):
     constellation: Optional[str]
-
 
 class ArchiveFinderCreateRequestSchema(Schema):
     start_date: datetime

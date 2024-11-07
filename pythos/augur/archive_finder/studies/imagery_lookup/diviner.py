@@ -6,11 +6,13 @@ from archive_finder.studies.imagery_lookup.models import ImageryLookupResult, Im
 
 class ImageryLookupDiviner(Diviner):
 
-    def divine(self):
-        self.transform_study_results()
+    def divine(self, dream):
+        study = dream.study
+        self.transform_study_results(study)
+        return dream
 
-    def transform_study_results(self):
-        imagery_lookups = ImageryLookupStudy.objects.filter(archive_finder=self.study.archive_finder)
+    def transform_study_results(self, study):
+        imagery_lookups = ImageryLookupStudy.objects.filter(archive_finder=study.archive_finder)
         for imagery_lookup in imagery_lookups:
             archive_item = imagery_lookup.archive_item
             provider, _ = Provider.objects.get_or_create(
@@ -33,3 +35,4 @@ class ImageryLookupDiviner(Diviner):
                 geometry=archive_item.geometry,
                 thumbnail=archive_item.thumbnail,
             )
+

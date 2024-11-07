@@ -2,7 +2,6 @@ from augury.models import Dream
 from augury.mystics.dreamer import Dreamer
 from augury.mystics.seeker import Seeker
 
-
 class ImageryLookupSeeker(Seeker):
 
     def seek(self, study):
@@ -16,3 +15,5 @@ class ImageryLookupSeeker(Seeker):
         dreamer = Dreamer()
         dream = dreamer.poll(dream)
         return dream.status
+
+ 

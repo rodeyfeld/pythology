@@ -1,16 +1,10 @@
-from __future__ import annotations
 from abc import ABC, abstractmethod
-import augury.models
-
 
 class Seeker(ABC):
 
     @abstractmethod
-    def seek(self, study) -> "Dream":
+    def seek(self, study) -> "Dream": # type: ignore
         ...
     @abstractmethod
-    def poll(self, study) -> "Dream":
+    def poll(self, study) -> "Dream": # type: ignore
         ...
-
-
-    

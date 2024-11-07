@@ -1,11 +1,40 @@
+from enum import StrEnum
 import uuid
 import requests
+from augur.augury.mystics.diviner import Diviner
+from augur.augury.mystics.seeker import Seeker
 from augury.models import Dream
 from requests.auth import HTTPBasicAuth
-
+from archive_finder.studies.imagery_lookup.seeker import ImageryLookupSeeker
+from archive_finder.studies.imagery_lookup.diviner import ImageryLookupDiviner
 DREAMFLOW_URL = "http://localhost:8080/api/v1"
 
 class Dreamer:
+
+    class StudyDAGName(StrEnum):
+        IMAGERY_FINDER = "imagery_finder"
+
+    @property
+    def seeker(self) -> Seeker:
+        return self.study.DREAM_CHART[self.study.name]["seeker"]()
+
+    @property
+    def diviner(self) -> Diviner:
+        return self.study.DREAM_CHART[self.study.name]["diviner"]()
+    
+    @property
+    def dag_name(self) -> str:
+        return self.DREAM_CHART[self.study.name]["dag_name"]
+
+    DREAM_CHART = {
+        StudyDAGName.IMAGERY_FINDER: {
+            "seeker": ImageryLookupSeeker,
+            "diviner": ImageryLookupDiviner
+        }
+    }
+
+    def __init__(self, study_name) -> None:
+        self.study_name = study_name
 
     def get_auth(self):    
         auth = HTTPBasicAuth("admin", "uGTgxN78bzBadxNq")

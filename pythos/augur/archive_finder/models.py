@@ -1,5 +1,4 @@
 from django.db import models
-from augury.models import Study
 from core.models import TimestampModel
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.geos import GEOSGeometry
@@ -30,13 +29,5 @@ class ArchiveItem(TimestampModel):
     sensor = models.CharField(blank=True, default='', max_length=256)
     thumbnail = models.CharField(blank=True, default='', max_length=2048)
     metadata = models.CharField(blank=True, default='', max_length=4096)
-    geometry = geomodels.GeometryField()
-
-
-class ArchiveStudy(Study):
-
-    class Meta:
-        abstract = True
-
-    archive_finder = models.ForeignKey(ArchiveFinder, on_delete=models.CASCADE)
+    geometry = geomodels.GeometryField() 
    

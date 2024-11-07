@@ -1,27 +1,14 @@
 from django.db import models
-from archive_finder.models import ArchiveItem, ArchiveStudy
+from archive_finder.models import ArchiveFinder, ArchiveItem
+from augury.models import Study
 from provider.models import Collection
 from core.models import Sensor, TimestampModel
 from django.contrib.gis.db import models as geomodels
 
-from archive_finder.studies.imagery_lookup.seeker import ImageryLookupSeeker
-from archive_finder.studies.imagery_lookup.diviner import ImageryLookupDiviner
-
-class ImageryLookupStudy(ArchiveStudy):
-    
-
-    class DreamName(models.TextChoices):
-        IMAGERY_FINDER = "IMAGERY_FINDER"
-
-    DREAM_CHART = {
-        DreamName.IMAGERY_FINDER: {
-            "seeker": ImageryLookupSeeker,
-            "diviner": ImageryLookupDiviner,
-            "dag_name": "imagery_finder",
-        }
-    }
+class ImageryLookupStudy(Study):
 
     archive_item = models.ForeignKey(ArchiveItem, null=True, on_delete=models.SET_NULL)
+    archive_finder = models.ForeignKey(ArchiveFinder, on_delete=models.CASCADE)
 
 class ImageryLookupResult(TimestampModel):
 
