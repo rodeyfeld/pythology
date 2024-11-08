@@ -1,10 +1,9 @@
-from augury.mystics.diviner import Diviner
 from core.models import Sensor
 from provider.models import Collection, Provider
 from archive_finder.studies.imagery_lookup.models import ImageryLookupResult, ImageryLookupStudy
 
 
-class ImageryLookupDiviner(Diviner):
+class ImageryLookupDiviner():
 
     def divine(self, dream):
         study = dream.study
@@ -12,7 +11,8 @@ class ImageryLookupDiviner(Diviner):
         return dream
 
     def transform_study_results(self, study):
-        imagery_lookups = ImageryLookupStudy.objects.filter(archive_finder=study.archive_finder)
+        imagery_lookups = study.imagerylookupitem_set.all()
+        print(imagery_lookups)
         for imagery_lookup in imagery_lookups:
             archive_item = imagery_lookup.archive_item
             provider, _ = Provider.objects.get_or_create(
@@ -26,7 +26,7 @@ class ImageryLookupDiviner(Diviner):
                 name=archive_item.sensor
             )
             _ = ImageryLookupResult.objects.create(
-                imagery_lookup_study=self,
+                imagery_lookup_study=study,
                 external_id=archive_item.external_id,
                 collection=collection,
                 start_date=archive_item.start_date,

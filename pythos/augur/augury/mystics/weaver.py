@@ -4,14 +4,13 @@ from archive_finder.studies.imagery_lookup.diviner import ImageryLookupDiviner
 from archive_finder.studies.imagery_lookup.seeker import ImageryLookupSeeker
 
 
-class Scholar:
+class Weaver:
     
-    class StudyNames(StrEnum):
-        BASE_STUDY = "base_study"
+    class StudyDagIds(StrEnum):
         IMAGERY_FINDER = "imagery_finder"
 
     studies = {
-        StudyNames.IMAGERY_FINDER: {
+        StudyDagIds.IMAGERY_FINDER: {
             "study": ImageryLookupStudy,
             "seeker": ImageryLookupSeeker,
             "diviner":  ImageryLookupDiviner,

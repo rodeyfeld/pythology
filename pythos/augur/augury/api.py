@@ -1,9 +1,9 @@
 from typing import List
 from ninja import Router
 
-from augury.mystics.dreamer import Dreamer
 from augury.models import Dream
-from augury.schema import DreamCreateSchema, DreamDetailsResponseSchema, DreamRequestSchema, DreamStatusResponseSchema
+from augury.mystics.weaver import Weaver
+from augury.schema import DreamDetailsResponseSchema, DreamDivineRequestSchema, DreamStatusResponseSchema
 
 router = Router(tags=["augury"])
 
@@ -38,9 +38,9 @@ def dream_details_id(request, dream_id):
     return response
 
 @router.get('/dream/status/{dream_id}',  response=DreamStatusResponseSchema)
-def dreamer_execute(request, dream_id):
+def dreamer_execute(request, dream_divine_schema: DreamDivineRequestSchema):
 
-    dream = Dream.objects.get(id=dream_id)
+    dream = Dream.objects.get(id=dream_divine_schema.dream_id)
     study = dream.study
     seeker = study.seeker
     dream = seeker.poll(study)
@@ -51,11 +51,12 @@ def dreamer_execute(request, dream_id):
     return response
 
 @router.post('/divine',  response=DreamStatusResponseSchema)
-def diviner_process(request, dream: DreamRequestSchema):
+def diviner_process(request, dream_schema: DreamDivineRequestSchema):
 
-    dream = Dream.objects.get(dream.dream_id)
+    dream = Dream.objects.get(pk=dream_schema.dream_id)
     study = dream.study
-    diviner = study.diviner
+    diviner_class = Weaver.studies[study.dag_id]["diviner"]
+    diviner = diviner_class()
     dream = diviner.divine(dream)
 
     response = DreamStatusResponseSchema(

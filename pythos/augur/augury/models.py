@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from augury.mystics.diviner import Diviner
 from core.models import TimestampModel
 
 
@@ -35,11 +36,14 @@ class Dream(TimestampModel):
     study = GenericForeignKey("study_type", "study_id")
     status = models.CharField(max_length=128, choices=Status, default=Status.INITIALIZED, blank=True)
 
+
+
 class Study(TimestampModel):
 
     class Meta:
         abstract = True
 
     @property
-    def dag_name(self):
-        return "anonymous_study"
+    def dag_id(self):
+        return ""
+    

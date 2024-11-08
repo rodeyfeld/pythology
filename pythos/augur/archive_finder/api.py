@@ -2,7 +2,7 @@ import json
 from typing import List
 from ninja import Router
 from archive_finder.utils import geojson_to_geosgeom
-from archive_finder.studies.scholar import Scholar
+from augury.mystics.weaver import Weaver
 from augury.schema import DreamStatusResponseSchema
 from core.models import User
 from archive_finder.models import ArchiveFinder
@@ -50,7 +50,7 @@ def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
 
     study_name = study_execute_schema.name
 
-    seeker_class = Scholar.studies[study_name]["seeker"]
+    seeker_class = Weaver.studies[study_name]["seeker"]
 
     seeker = seeker_class()
     dream = seeker.seek(archive_finder_id=study_execute_schema.archive_finder_id)

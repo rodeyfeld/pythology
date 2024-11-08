@@ -14,7 +14,7 @@ class DreamDetailsResponseSchema(Schema):
     study_status: str
     dream_status: str
 
-class DreamRequestSchema(Schema):
+class DreamDivineRequestSchema(Schema):
     dream_id: int
 
 class DreamCreateSchema(Schema):

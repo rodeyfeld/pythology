@@ -1,3 +1,4 @@
+from typing import Any
 import uuid
 import requests
 from augury.models import Dream, Study
@@ -10,10 +11,10 @@ class Dreamer:
         auth = HTTPBasicAuth("admin", "uGTgxN78bzBadxNq")
         return auth
 
-    def execute(self, study, conf):
+    def execute(self, study: Study, conf: dict[str, Any]):
         dream = Dream.objects.create(study=study)
-        dreamflow_dag_id = study.dag_name
-        response = self.execute_study(dag_id=dreamflow_dag_id, conf=conf)
+        conf["dream_pk"] = dream.pk
+        response = self.execute_study(dag_id=study.dag_id, conf=conf)
         if response.status_code != 200:
             dream.status = Dream.Status.ANOMALOUS
             dream.save()
@@ -45,7 +46,6 @@ class Dreamer:
         return response
     
     def execute_study(self, dag_id, conf=dict):
-        dag_run_id = uuid.uuid4().hex
-        payload = {"conf": conf, "dag_run_id": dag_run_id}
+        payload = {"conf": conf}
         response = self.execute_dag(dag_id=dag_id, payload=payload)
         return response
