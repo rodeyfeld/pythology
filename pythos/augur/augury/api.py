@@ -1,16 +1,13 @@
 from typing import List
 from ninja import Router
 
+from augury.mystics.dreamer import Dreamer
 from augury.models import Dream
 from augury.schema import DreamCreateSchema, DreamDetailsResponseSchema, DreamRequestSchema, DreamStatusResponseSchema
 
 router = Router(tags=["augury"])
 
-
-
-
-
-@router.get('/augury/dream/details/',  response=List[DreamStatusResponseSchema])
+@router.get('/dream/details/',  response=List[DreamStatusResponseSchema])
 def dream_details(request):
 
     dreams = Dream.objects.all()
@@ -26,8 +23,7 @@ def dream_details(request):
         responses.append(response)
     return responses
 
-
-@router.get('/augury/dream/details/{dream_id}',  response=DreamStatusResponseSchema)
+@router.get('/dream/details/{dream_id}',  response=DreamStatusResponseSchema)
 def dream_details_id(request, dream_id):
 
     dream = Dream.objects.get(pk=dream_id)
@@ -41,20 +37,8 @@ def dream_details_id(request, dream_id):
     )
     return response
 
-@router.post('/augury/dream/execute',  response=DreamStatusResponseSchema)
-def seeker_execute(request, dream: DreamCreateSchema):
-
-    study = Study.DREAM_CHART
-    seeker = study.seeker
-    dream = seeker.seek(study)
-
-    response = DreamStatusResponseSchema(
-        status=dream.status
-    )
-    return response
-
-@router.get('/augury/seeker/status/{dream_id}',  response=DreamStatusResponseSchema)
-def seeker_poll(request, dream_id):
+@router.get('/dream/status/{dream_id}',  response=DreamStatusResponseSchema)
+def dreamer_execute(request, dream_id):
 
     dream = Dream.objects.get(id=dream_id)
     study = dream.study
@@ -66,7 +50,7 @@ def seeker_poll(request, dream_id):
     )
     return response
 
-@router.post('/augury/divine',  response=DreamStatusResponseSchema)
+@router.post('/divine',  response=DreamStatusResponseSchema)
 def diviner_process(request, dream: DreamRequestSchema):
 
     dream = Dream.objects.get(dream.dream_id)

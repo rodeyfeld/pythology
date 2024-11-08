@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from core.models import TimestampModel
-from augury.mystics.seeker import Seeker
-from augury.mystics.diviner import Diviner
 
 
 class Dream(TimestampModel):
@@ -12,6 +10,7 @@ class Dream(TimestampModel):
         indexes = [
             models.Index(fields=["study_type", "study_id"]),
         ]
+
 
     class Status(models.TextChoices):
         INITIALIZED = "INITIALIZED"
@@ -30,24 +29,17 @@ class Dream(TimestampModel):
         "failed": Status.FAILED,
     }
 
+
     study_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     study_id = models.PositiveIntegerField()
     study = GenericForeignKey("study_type", "study_id")
     status = models.CharField(max_length=128, choices=Status, default=Status.INITIALIZED, blank=True)
 
-
 class Study(TimestampModel):
-    
+
     class Meta:
         abstract = True
 
-    class Status(models.TextChoices):
-        INITIALIZED = "INITIALIZED"
-        RUNNING = "RUNNING"
-        SUCCESS = "SUCCESS"
-        FAILED = "FAILED"
-        ANOMALOUS = "ANOMALOUS"
-                
-    name = models.CharField(max_length=128, blank=True)
-    status = models.CharField(max_length=128, choices=Status, default=Status.INITIALIZED, blank=True)
-
+    @property
+    def dag_name(self):
+        return "anonymous_study"

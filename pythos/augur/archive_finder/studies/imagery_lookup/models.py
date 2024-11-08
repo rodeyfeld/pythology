@@ -10,6 +10,10 @@ class ImageryLookupStudy(Study):
     archive_item = models.ForeignKey(ArchiveItem, null=True, on_delete=models.SET_NULL)
     archive_finder = models.ForeignKey(ArchiveFinder, on_delete=models.CASCADE)
 
+    @property
+    def dag_name(self):
+        return "imagery_finder"
+    
 class ImageryLookupResult(TimestampModel):
 
     imagery_lookup_study = models.ForeignKey(ImageryLookupStudy, null=True, on_delete=models.SET_NULL)

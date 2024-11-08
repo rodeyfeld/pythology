@@ -51,6 +51,6 @@ class ArchiveFinderCreateResponseSchema(Schema):
     end_date: datetime
     geometry: Point | Polygon
 
-class ArchiveStudyResponseSchema(Schema):
+class StudyExecuteRequestSchema(Schema):
     archive_finder_id: int
     name: str
