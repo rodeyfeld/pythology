@@ -4,7 +4,7 @@ import json
 from types import NoneType
 from typing import Any, Optional
 from ninja import Schema
-from geojson_pydantic import Point, Polygon
+from geojson_pydantic import LineString, Point, Polygon
 
 class ArchiveFinderSchema(Schema):
     id: int 
@@ -12,9 +12,8 @@ class ArchiveFinderSchema(Schema):
     start_date: datetime
     end_date: datetime
     is_active: bool
-    status: str
     rules: str
-    geometry: Point | Polygon
+    geometry: Point | Polygon | LineString
 
     @staticmethod
     def resolve_geometry(obj):

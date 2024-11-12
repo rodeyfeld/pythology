@@ -3,7 +3,7 @@ from typing import List
 from ninja import Router
 from archive_finder.utils import geojson_to_geosgeom
 from augury.mystics.weaver import Weaver
-from augury.schema import DreamStatusResponseSchema
+from augury.schema import DreamStatusResponseSchema, DreamWeaverSchema
 from core.models import User
 from archive_finder.models import ArchiveFinder
 from archive_finder.schema import (
@@ -24,6 +24,14 @@ def archive_finders(request):
 def archive_finder_by_id(request, archive_finder_id):
     queryset = ArchiveFinder.objects.get(id=archive_finder_id)
     return queryset
+
+
+@router.get('/finder/studies', response=List[DreamWeaverSchema])
+def finder_studies(request):
+        
+    return [
+            {'study_name': Weaver.StudyDagIds.IMAGERY_FINDER},
+        ]
 
 @router.post('/finder/create',  response=ArchiveFinderCreateResponseSchema)
 def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequestSchema):
@@ -59,4 +67,5 @@ def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
         status=dream.status
     )
     return response
+
 
