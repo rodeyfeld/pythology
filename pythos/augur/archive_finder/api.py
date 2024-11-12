@@ -25,14 +25,6 @@ def archive_finder_by_id(request, archive_finder_id):
     queryset = ArchiveFinder.objects.get(id=archive_finder_id)
     return queryset
 
-
-@router.get('/finder/studies', response=List[DreamWeaverSchema])
-def finder_studies(request):
-        
-    return [
-            {'study_name': Weaver.StudyDagIds.IMAGERY_FINDER},
-        ]
-
 @router.post('/finder/create',  response=ArchiveFinderCreateResponseSchema)
 def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequestSchema):
     user = User.objects.all().first()

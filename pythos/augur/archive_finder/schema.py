@@ -2,9 +2,13 @@
 from datetime import datetime
 import json
 from types import NoneType
-from typing import Any, Optional
+from typing import Any, List, Optional
 from ninja import Schema
 from geojson_pydantic import LineString, Point, Polygon
+
+from archive_finder.studies.imagery_lookup.schema import ImageryLookupStudySchema
+from augury.schema import DreamWeaverSchema
+from augury.mystics.weaver import Weaver
 
 class ArchiveFinderSchema(Schema):
     id: int 
@@ -14,11 +18,29 @@ class ArchiveFinderSchema(Schema):
     is_active: bool
     rules: str
     geometry: Point | Polygon | LineString
+    study_options: List[DreamWeaverSchema]
+    studies: List[ImageryLookupStudySchema]
 
     @staticmethod
     def resolve_geometry(obj):
         geojson = json.loads(obj.geometry.geojson)
         return geojson
+
+    @staticmethod
+    def resolve_study_options(_):
+        return [
+                {'study_name': Weaver.StudyDagIds.IMAGERY_FINDER},
+            ]
+        
+    @staticmethod
+    def resolve_studies(obj):
+
+        studies = obj.imagerylookupstudy_set.all().prefetch_related("study__dream")
+        
+
+        return list(studies)
+        
+
 
 class ArchiveFinderRules(Schema):
     is_resolution_max_cm: Optional[int|NoneType] = None

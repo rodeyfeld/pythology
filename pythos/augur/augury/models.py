@@ -46,4 +46,7 @@ class Study(TimestampModel):
     @property
     def dag_id(self):
         return ""
-    
+
+    @property
+    def status(self):
+        return self.dream_set.all().first().status
