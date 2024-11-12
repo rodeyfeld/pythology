@@ -38,9 +38,9 @@ def dream_details_id(request, dream_id):
     return response
 
 @router.get('/dream/status/{dream_id}',  response=DreamStatusResponseSchema)
-def dreamer_execute(request, dream_divine_schema: DreamDivineRequestSchema):
+def dreamer_execute(request, dream_id: int):
 
-    dream = Dream.objects.get(id=dream_divine_schema.dream_id)
+    dream = Dream.objects.get(id=dream_id)
     study = dream.study
     seeker = study.seeker
     dream = seeker.poll(study)

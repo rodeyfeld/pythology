@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from archive_finder.studies.imagery_lookup.models import ImageryLookupItem, ImageryLookupResult
 from core.admin import TimeStampAdminMixin
 from archive_finder.models import ArchiveFinder, ArchiveItem
 
@@ -24,4 +25,28 @@ class ArchiveItemAdmin(admin.ModelAdmin, TimeStampAdminMixin):
         "sensor",
         "thumbnail",
         "geometry",
+     ] + TimeStampAdminMixin.list_display
+
+
+@admin.register(ImageryLookupItem)
+class ImageryLookupItemAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+    list_display = [
+        "archive_finder",
+        "archive_item",
+        "study",
+     ] + TimeStampAdminMixin.list_display
+
+
+@admin.register(ImageryLookupResult)
+class ImageryLookupResultAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+    list_display = [
+        "study",
+        "external_id",
+        "collection",
+        "start_date",
+        "end_date",
+        "sensor",
+        "geometry",
+        "thumbnail",
+        "metadata",
      ] + TimeStampAdminMixin.list_display

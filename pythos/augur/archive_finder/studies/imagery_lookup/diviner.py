@@ -1,6 +1,6 @@
 from core.models import Sensor
 from provider.models import Collection, Provider
-from archive_finder.studies.imagery_lookup.models import ImageryLookupResult, ImageryLookupStudy
+from archive_finder.studies.imagery_lookup.models import ImageryLookupResult
 
 
 class ImageryLookupDiviner():
