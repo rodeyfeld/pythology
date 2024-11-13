@@ -76,7 +76,6 @@ class StudyExecuteRequestSchema(Schema):
     study_name: str
 
 class StudyResultsSchema(Schema):
-    archive_finder_id: int
     study_name: str
     study_id: int
     results: List[ImageryLookupResultSchema]

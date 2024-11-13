@@ -1,13 +1,21 @@
 from django.contrib import admin
 
 from core.admin import TimeStampAdminMixin
-from provider.models import Order, Provider, ProviderIntegration
+from provider.models import Collection, Order, Provider, ProviderIntegration
 
 @admin.register(Provider)
 class ProviderAdmin(admin.ModelAdmin, TimeStampAdminMixin):
     list_display = [
         "name",
         "is_active",
+     ] + TimeStampAdminMixin.list_display
+
+
+@admin.register(Collection)
+class CollectionAdmin(admin.ModelAdmin, TimeStampAdminMixin):
+    list_display = [
+        "name",
+        "provider",
      ] + TimeStampAdminMixin.list_display
 
 

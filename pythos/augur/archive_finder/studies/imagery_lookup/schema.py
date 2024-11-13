@@ -35,7 +35,7 @@ class ImageryLookupItemSchema(ModelSchema):
 class ImageryLookupResultSchema(Schema):
 
     external_id: str
-    collection: CollectionSchema
+    collection: str
     start_date: datetime
     end_date: datetime
     sensor: SensorSchema

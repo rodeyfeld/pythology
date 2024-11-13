@@ -22,7 +22,6 @@ class ProviderIntegrationOrderResponseSchema(Schema):
     
     status: str
     
-class CollectionSchema(ModelSchema):
-    class Meta:
-        model = Collection
-        fields = "__all__"
+class CollectionSchema(Schema):
+   
+    name: str
