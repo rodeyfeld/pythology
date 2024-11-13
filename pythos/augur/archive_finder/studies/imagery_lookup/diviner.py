@@ -1,5 +1,5 @@
 import json
-from archive_finder.studies.imagery_lookup.schema import ImageryLookupResultSchema
+from archive_finder.studies.imagery_lookup.schema import ImageryLookupResultSchema, ImageryLookupStudyResultDataSchema
 from core.models import Sensor
 from provider.models import Collection, Provider
 from archive_finder.studies.imagery_lookup.models import ImageryLookupResult, ImageryLookupStudy
@@ -11,9 +11,10 @@ class ImageryLookupDiviner:
         study = dream.study
         self.transform_study_results(study)
         return dream
-    
+     
     def interpret(self, study_id):
-        study = ImageryLookupStudy.objects.get(study_id=study_id)
+        study = ImageryLookupStudy.objects.get(pk=study_id)
+        archive_finder = study.archive_finder
         results = []
         imagery_lookup_results = ImageryLookupResult.objects.filter(study=study)
         for imagery_lookup_result in imagery_lookup_results:
@@ -29,8 +30,13 @@ class ImageryLookupDiviner:
                 metadata=imagery_lookup_result.metadata,
             )
             results.append(result)
-
-        return results
+        geometry = json.loads(archive_finder.geometry.geojson)
+        data = ImageryLookupStudyResultDataSchema(
+            archive_finder_id=archive_finder.pk,
+            archive_finder_geometry=geometry,
+            results=results,
+        )
+        return data
 
     def transform_study_results(self, study):
         imagery_lookups = study.imagerylookupitem_set.all()

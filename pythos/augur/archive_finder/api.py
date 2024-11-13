@@ -67,12 +67,12 @@ def study_results(request, study_name, study_id):
     diviner_class = Weaver.studies[study_name]["diviner"]
 
     diviner = diviner_class()
-    results = diviner.interpret(study_id=study_id)
+    study_data = diviner.interpret(study_id=study_id)
 
     response = StudyResultsSchema(
         study_name=study_name,
         study_id=study_id,
-        results=results
+        study_data=study_data
     )
     return response
 

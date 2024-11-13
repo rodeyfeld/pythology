@@ -1,3 +1,4 @@
+from typing import List
 from ninja import ModelSchema, Schema
 from datetime import datetime
 from geojson_pydantic import LineString, MultiPolygon, Point, Polygon
@@ -43,3 +44,8 @@ class ImageryLookupResultSchema(Schema):
     thumbnail: str
     metadata: str
 
+
+class ImageryLookupStudyResultDataSchema(Schema):
+    archive_finder_id: int
+    archive_finder_geometry: Polygon
+    results: List[ImageryLookupResultSchema]
