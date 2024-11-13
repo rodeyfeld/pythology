@@ -3,14 +3,15 @@ from typing import List
 from ninja import Router
 from archive_finder.utils import geojson_to_geosgeom
 from augury.mystics.weaver import Weaver
-from augury.schema import DreamStatusResponseSchema, DreamWeaverSchema
+from augury.schema import DreamStatusResponseSchema
 from core.models import User
 from archive_finder.models import ArchiveFinder
 from archive_finder.schema import (
     ArchiveFinderCreateRequestSchema,   
     ArchiveFinderCreateResponseSchema,  
     ArchiveFinderSchema,
-    StudyExecuteRequestSchema
+    StudyExecuteRequestSchema,
+    StudyResultsSchema
 )
 
 router = Router(tags=["archive search"])
@@ -59,5 +60,36 @@ def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
         status=dream.status
     )
     return response
+
+@router.get('/study/{study_name}/{study_id}/results',  response=StudyResultsSchema)
+def study_results(request, study_name, study_id):
+
+    diviner_class = Weaver.studies[study_name]["diviner"]
+
+    diviner = diviner_class()
+    results = diviner.interpret(study_id=study_id)
+
+    response = StudyResultsSchema(
+        study_name=study_name,
+        study_id=study_id,
+        results=results
+    )
+    return response
+
+@router.get('/study/{archive_finder_id}/{study_name}/status',  response=DreamStatusResponseSchema)
+def study_status(request, archive_finder_id, study_name, study_id):
+
+    study_name = study_execute_schema.study_name
+
+    seeker_class = Weaver.studies[study_name]["seeker"]
+
+    seeker = seeker_class()
+    dream = seeker.seek(archive_finder_id=study_execute_schema.archive_finder_id)
+
+    response = DreamStatusResponseSchema(
+        status=dream.status
+    )
+    return response
+
 
 

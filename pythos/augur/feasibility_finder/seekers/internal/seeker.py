@@ -1,8 +1,7 @@
 
 import requests
 from core.models import IntegrationConfigOption, InternalIntegration
-from feasibility_finder.factories import FeasibilityResultFactory
-from feasibility_finder.models import FeasibilityFinder
+from feasibility_finder.models import FeasibilityFinder, FeasibilityResult
 from feasibility_finder.schema import FeasbilityResultSeekerAudienceResponseSchema, FeasibilityFinderSeekerAudienceRequestSchema
 from provider.models import Provider
 
@@ -59,7 +58,7 @@ class Seeker:
             confidence_score=data['confidence_score'],
         )
 
-        feasibility_result = FeasibilityResultFactory.create(
+        feasibility_result = FeasibilityResult.objects.create(
             feasibility_finder=self.feasibility_finder,
             provider=provider,
             metadata=feasibility_result_seeker_response.metadata,

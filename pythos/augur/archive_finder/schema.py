@@ -6,7 +6,7 @@ from typing import Any, List, Optional
 from ninja import Schema
 from geojson_pydantic import LineString, Point, Polygon
 
-from archive_finder.studies.imagery_lookup.schema import ImageryLookupStudySchema
+from archive_finder.studies.imagery_lookup.schema import ImageryLookupResultSchema, ImageryLookupStudySchema
 from augury.schema import DreamWeaverSchema
 from augury.mystics.weaver import Weaver
 
@@ -74,3 +74,9 @@ class ArchiveFinderCreateResponseSchema(Schema):
 class StudyExecuteRequestSchema(Schema):
     archive_finder_id: int
     study_name: str
+
+class StudyResultsSchema(Schema):
+    archive_finder_id: int
+    study_name: str
+    study_id: int
+    results: List[ImageryLookupResultSchema]

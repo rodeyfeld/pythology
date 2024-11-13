@@ -1,8 +1,9 @@
-from ninja import ModelSchema
-
-from geojson_pydantic import LineString, Point, Polygon
-import json
-from archive_finder.studies.imagery_lookup.models import ImageryLookupItem, ImageryLookupResult, ImageryLookupStudy
+from ninja import ModelSchema, Schema
+from datetime import datetime
+from geojson_pydantic import LineString, MultiPolygon, Point, Polygon
+from archive_finder.studies.imagery_lookup.models import ImageryLookupItem, ImageryLookupStudy
+from core.schema import SensorSchema
+from provider.schema import CollectionSchema
 
 
 class ImageryLookupStudySchema(ModelSchema):
@@ -31,25 +32,14 @@ class ImageryLookupItemSchema(ModelSchema):
         fields = "__all__"
 
 
-class ImageryLookupResultSchema(ModelSchema):
+class ImageryLookupResultSchema(Schema):
 
-    geometry: Point | Polygon | LineString = None
-    
-    
-    class Meta:
-        model = ImageryLookupResult
-        fields = [
-            "study",
-            "external_id",
-            "collection",
-            "start_date",
-            "end_date",
-            "sensor",
-            "thumbnail",
-            "metadata",
-        ]
+    external_id: str
+    collection: CollectionSchema
+    start_date: datetime
+    end_date: datetime
+    sensor: SensorSchema
+    geometry: Point | Polygon | LineString | MultiPolygon
+    thumbnail: str
+    metadata: str
 
-    @staticmethod
-    def resolve_geometry(obj):
-        geojson = json.loads(obj.geometry.geojson)
-        return geojson

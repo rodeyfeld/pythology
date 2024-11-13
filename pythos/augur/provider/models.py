@@ -1,30 +1,22 @@
 from django.db import models
 
-from core.models import Integration, IntegrationCapabilityOption, IntegrationConfigOption, TimestampModel
+from core.models import Integration, TimestampModel
 
 class Provider(TimestampModel):
 
     name = models.CharField(max_length=256)
     is_active = models.BooleanField(default=True)
 
-    def __str__(self) -> str:
-        return f"{self.pk}|{self.name=}: {self.is_active}"
 
 class Collection(TimestampModel):
 
     name = models.CharField(max_length=512)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
 
-    def __str__(self) -> str:
-        return f"{self.pk}|{self.name=}"
 
 class ProviderIntegration(Integration):
 
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return f"{self.pk}|{self.name=}: {self.is_active}"
-
 
 class Order(TimestampModel):
 

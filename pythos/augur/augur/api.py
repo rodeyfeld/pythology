@@ -14,7 +14,7 @@ class AuthBearer(HttpBearer):
             return token
 
 api.add_router("/providers/", provider_router)
-api.add_router("/feasibility/", feasibility_finder_router)
+# api.add_router("/feasibility/", feasibility_finder_router)
 api.add_router("/archive/", archive_finder_router)
 api.add_router("/augury/", augury_router)
 api.add_router("/core/", core_router)

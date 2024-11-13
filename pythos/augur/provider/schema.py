@@ -1,6 +1,6 @@
 
 from ninja import ModelSchema, Schema
-from provider.models import Provider, ProviderIntegration 
+from provider.models import Provider, ProviderIntegration, Collection
 
 
 class ProviderSchema(ModelSchema):
@@ -21,3 +21,8 @@ class ProviderIntegrationOrderRequestSchema(Schema):
 class ProviderIntegrationOrderResponseSchema(Schema):
     
     status: str
+    
+class CollectionSchema(ModelSchema):
+    class Meta:
+        model = Collection
+        fields = "__all__"

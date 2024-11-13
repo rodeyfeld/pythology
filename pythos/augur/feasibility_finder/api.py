@@ -1,9 +1,7 @@
 from typing import List
 from ninja import Router
 
-from core.factories import ImageryRequestFactory
-from core.models import User
-from feasibility_finder.factories import FeasibilityFinderFactory
+from core.models import ImageryRequest, User
 from feasibility_finder.models import FeasibilityFinder, FeasibilityResult
 from feasibility_finder.schema import (
     FeasibilityFinderCreateRequestSchema,   
@@ -46,11 +44,11 @@ def get_feasilibity_finder_by_id(request, feasibility_finder_id):
 @router.post('/finders/create',  response=FeasibilityFinderCreateResponseSchema)
 def post_create_finder(request, feasibility_finder_create_schema: FeasibilityFinderCreateRequestSchema):
     user = User.objects.all().first()
-    imagery_request = ImageryRequestFactory.create(geometry=feasibility_finder_create_schema.geometry,
+    imagery_request = ImageryRequest.objects.create(geometry=feasibility_finder_create_schema.geometry,
                                                     user=user)
 
     feasibility_finder_create_schema.rules = ''
-    feasibility_finder = FeasibilityFinderFactory.create(
+    feasibility_finder = FeasibilityFinder.objects.create(
         imagery_request=imagery_request,
         start_date = feasibility_finder_create_schema.start_date,
         end_date = feasibility_finder_create_schema.end_date,

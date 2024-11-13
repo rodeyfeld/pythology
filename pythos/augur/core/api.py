@@ -1,7 +1,6 @@
 from typing import List
 from ninja import Router
 
-from core.factories import ImageryRequestFactory
 from core.models import ImageryRequest, Organization, User
 from core.schema import ImageryRequestCreateRequestSchema, ImageryRequestCreateResponseSchema, ImageryRequestSchema, OrganizationSchema, UserSchema
 
@@ -22,7 +21,7 @@ def list_imagery_by_id(request, imagery_id):
 @router.post('/imagery/create',  response=ImageryRequestCreateResponseSchema)
 def post_create_imagery(request, imagery_request_create_schema: ImageryRequestCreateRequestSchema):
     user = User.objects.all().first()
-    imagery_request = ImageryRequestFactory.create(geometry=imagery_request_create_schema.geometry, user=user, name=imagery_request_create_schema.name)
+    imagery_request = ImageryRequest.objects.create(geometry=imagery_request_create_schema.geometry, user=user, name=imagery_request_create_schema.name)
 
     response = ImageryRequestCreateResponseSchema(
         id=imagery_request.pk,

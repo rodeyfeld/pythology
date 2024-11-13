@@ -2,7 +2,6 @@ from typing import List
 from ninja import Router
 
 from feasibility_finder.models import FeasibilityResult
-from provider.integrations.integration import get_interactive_providers
 from provider.schema import ProviderIntegrationOrderRequestSchema, ProviderIntegrationOrderResponseSchema, ProviderIntegrationSchema, ProviderSchema
 from .models import Provider, ProviderIntegration
 
@@ -34,16 +33,3 @@ def list_provider_integrations_by_provider_id(request, provider_id):
     queryset = ProviderIntegration.objects.filter(provider_id=provider_id)
     return queryset
 
-
-
-@router.post('/integrations/order/tasking', response=ProviderIntegrationOrderResponseSchema)
-def provider_integration_order(request, order_request_schema: ProviderIntegrationOrderRequestSchema):
-    queryset = ProviderIntegration.objects.filter(name=order_request_schema.provider_integration_name).first()
-    interactive_provider = get_interactive_providers()[queryset.name](queryset)
-    feasbility_result = FeasibilityResult.objects.get(pk=order_request_schema.feasibility_result_id)
-    order = interactive_provider.task_order(feasbility_result)
-
-    response = ProviderIntegrationOrderResponseSchema(
-        status=order.status
-    )
-    return response
