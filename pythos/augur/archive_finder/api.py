@@ -48,7 +48,7 @@ def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequ
 @router.post('/study/execute',  response=DreamStatusResponseSchema)
 def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
 
-    study_name = study_execute_schema.name
+    study_name = study_execute_schema.study_name
 
     seeker_class = Weaver.studies[study_name]["seeker"]
 

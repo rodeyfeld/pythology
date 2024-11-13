@@ -35,8 +35,7 @@ class ArchiveFinderSchema(Schema):
     @staticmethod
     def resolve_studies(obj):
 
-        studies = obj.imagerylookupstudy_set.all().prefetch_related("study__dream")
-        
+        studies = obj.imagerylookupstudy_set.all()
 
         return list(studies)
         
@@ -74,4 +73,4 @@ class ArchiveFinderCreateResponseSchema(Schema):
 
 class StudyExecuteRequestSchema(Schema):
     archive_finder_id: int
-    name: str
+    study_name: str

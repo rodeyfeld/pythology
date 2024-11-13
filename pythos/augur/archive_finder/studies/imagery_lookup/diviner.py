@@ -3,7 +3,7 @@ from provider.models import Collection, Provider
 from archive_finder.studies.imagery_lookup.models import ImageryLookupResult
 
 
-class ImageryLookupDiviner():
+class ImageryLookupDiviner:
 
     def divine(self, dream):
         study = dream.study
@@ -11,6 +11,7 @@ class ImageryLookupDiviner():
         return dream
 
     def transform_study_results(self, study):
+        print(study)
         imagery_lookups = study.imagerylookupitem_set.all()
         print(imagery_lookups)
         for imagery_lookup in imagery_lookups:
@@ -26,7 +27,7 @@ class ImageryLookupDiviner():
                 name=archive_item.sensor
             )
             _ = ImageryLookupResult.objects.create(
-                imagery_lookup_study=study,
+                study=study,
                 external_id=archive_item.external_id,
                 collection=collection,
                 start_date=archive_item.start_date,

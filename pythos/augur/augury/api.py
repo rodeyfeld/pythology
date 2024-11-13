@@ -54,6 +54,7 @@ def dreamer_execute(request, dream_id: int):
 def diviner_process(request, dream_schema: DreamDivineRequestSchema):
 
     dream = Dream.objects.get(pk=dream_schema.dream_id)
+    print(dream)
     study = dream.study
     diviner_class = Weaver.studies[study.dag_id]["diviner"]
     diviner = diviner_class()

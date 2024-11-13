@@ -34,7 +34,7 @@ def build_execute_query(archive_finder_pk, dream_pk):
         CURRENT_TIMESTAMP as modified,
         archive_finder_id,
         archive_item_id,
-        (SELECT id FROM augury_dream WHERE id = {dream_pk}) as study_id
+        (SELECT study_id FROM augury_dream WHERE id = {dream_pk}) as study_id
     FROM archive_seeker_{archive_finder_pk}_{dream_pk}
     ;
     """
@@ -76,7 +76,7 @@ def imagery_finder():
 
 
         @task
-        def notify_augur():
+        def notify_augur(_):
             dream_pk = get_conf_value("dream_pk")
             
             poll_archive_finder = SimpleHttpOperator(
@@ -87,9 +87,8 @@ def imagery_finder():
                 method="POST",
             )
             poll_archive_finder.execute(context={})
-
-        create_archive_finder_items() 
-        notify_augur()
+        
+        notify_augur(create_archive_finder_items())
         
     etl()
 

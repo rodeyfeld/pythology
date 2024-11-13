@@ -1,7 +1,6 @@
 from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from augury.mystics.diviner import Diviner
 from core.models import TimestampModel
 
 
@@ -37,7 +36,6 @@ class Dream(TimestampModel):
     status = models.CharField(max_length=128, choices=Status, default=Status.INITIALIZED, blank=True)
 
 
-
 class Study(TimestampModel):
 
     class Meta:
@@ -49,4 +47,7 @@ class Study(TimestampModel):
 
     @property
     def status(self):
-        return self.dream_set.all().first().status
+        study_type = ContentType.objects.get_for_model(self)
+        dream =  Dream.objects.get(study_type=study_type, study_id=self.pk)
+        return dream.status
+    
