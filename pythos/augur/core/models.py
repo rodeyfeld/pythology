@@ -20,7 +20,7 @@ class Sensor(TimestampModel):
     name = models.CharField(max_length=128, blank=True, default='')
     
     def __str__(self) -> str:
-        return f"{self.technique=}"
+        return f"{self.name=}"
     
     def map_sensor_name_to_technique(self, name: str):
         if name in ('EO', 'MSI'):

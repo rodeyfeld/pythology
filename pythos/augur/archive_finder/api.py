@@ -50,7 +50,7 @@ def create_finder(request, archive_finder_create_schema: ArchiveFinderCreateRequ
 def execute_study(request, study_execute_schema: StudyExecuteRequestSchema):
 
     study_name = study_execute_schema.study_name
-
+    print(study_name)
     seeker_class = Weaver.studies[study_name]["seeker"]
 
     seeker = seeker_class()
@@ -76,18 +76,18 @@ def study_results(request, study_name, study_id):
     )
     return response
 
-@router.get('/study/{archive_finder_id}/{study_name}/status',  response=DreamStatusResponseSchema)
-def study_status(request, archive_finder_id, study_name, study_id):
+@router.get('/study/{study_name}/{study_id}/status',  response=DreamStatusResponseSchema)
+def study_status(request, study_name, study_id):
 
     study_name = study_execute_schema.study_name
 
-    seeker_class = Weaver.studies[study_name]["seeker"]
+    diviner_class = Weaver.studies[study_name]["diviner"]
 
-    seeker = seeker_class()
-    dream = seeker.seek(archive_finder_id=study_execute_schema.archive_finder_id)
+    diviner = diviner_class()
+    status = diviner.get_status(study_id=study_id)
 
     response = DreamStatusResponseSchema(
-        status=dream.status
+        status=status
     )
     return response
 
