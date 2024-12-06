@@ -20,7 +20,7 @@ def build_execute_query(archive_finder_pk, dream_pk):
     FROM archive_finder_archiveitem archive_items
     LEFT JOIN archive_finder_archivefinder archive_finders
     ON archive_items.start_date >= archive_finders.start_date
-    AND archive_items.end_date >= archive_finders.end_date
+    AND archive_items.end_date <= archive_finders.end_date
     WHERE ST_Intersects(
         archive_items.geometry,
         archive_finders.geometry
