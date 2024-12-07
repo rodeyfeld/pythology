@@ -35,6 +35,9 @@ class Dream(TimestampModel):
     study = GenericForeignKey("study_type", "study_id")
     status = models.CharField(max_length=128, choices=Status, default=Status.INITIALIZED, blank=True)
 
+    def save(self, *args, **kwargs):
+        super().save()
+        print(self.status)
 
 class Study(TimestampModel):
 
@@ -47,7 +50,10 @@ class Study(TimestampModel):
 
     @property
     def status(self):
-        study_type = ContentType.objects.get_for_model(self)
-        dream =  Dream.objects.get(study_type=study_type, study_id=self.pk)
+        try:
+            study_type = ContentType.objects.get_for_model(self)
+            dream =  Dream.objects.get(study_type=study_type, study_id=self.pk)
+        except Exception as e:
+            return Dream.Status.ANOMALOUS
         return dream.status
-    
+

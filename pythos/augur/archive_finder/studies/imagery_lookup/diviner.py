@@ -1,4 +1,5 @@
 import json
+from augury.models import Dream
 from augury.mystics.dreamer import Dreamer
 from archive_finder.studies.imagery_lookup.schema import ImageryLookupResultSchema, ImageryLookupStudyResultDataSchema
 from core.models import Sensor
@@ -24,13 +25,16 @@ class ImageryLookupDiviner:
 
     def divine(self, dream):
         study = dream.study
-        self.transform_study_results(study)
+        dream.status = Dream.Status.PROCESSING
+        dream.save()
+        try:
+            self.transform_study_results(study)
+        except Exception as e:
+            dream.status = Dream.Status.FAILED
+            dream.save()
+        dream.status = Dream.Status.COMPLETE
+        dream.save()
         return dream
-
-    def poll(self, dream):
-        dreamer = Dreamer()
-        dream = dreamer.poll(dream)
-        return dream.status
 
     def interpret(self, study_id):
         study = ImageryLookupStudy.objects.get(pk=study_id)

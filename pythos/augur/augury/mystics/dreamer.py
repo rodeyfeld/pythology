@@ -12,14 +12,14 @@ class Dreamer:
         return auth
 
     def execute(self, study: Study, conf: dict[str, Any]):
-        dream = Dream.objects.create(study=study)
+        dream = Dream.objects.create(study=study, status=Dream.Status.INITIALIZED)
         conf["dream_pk"] = dream.pk
         response = self.execute_study(dag_id=study.dag_id, conf=conf)
         if response.status_code != 200:
             dream.status = Dream.Status.ANOMALOUS
             dream.save()
             return dream
-        dream.status = Dream.Status.INITIALIZED
+        dream.status = Dream.Status.RUNNING
         dream.save()
         return dream
 
@@ -31,7 +31,7 @@ class Dreamer:
             dream = status
             dream.save()
             return dream
-        dream = Dream.Status.ANOMALOUS
+        dream.status = Dream.Status.ANOMALOUS
         dream.save()
         return dream
     
