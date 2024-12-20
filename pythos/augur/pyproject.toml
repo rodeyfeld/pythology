@@ -1,7 +1,7 @@
 [project]
 name = "augur"
 version = "0.1.0"
-description = "AUGUR: Airflow United Geospatial Universal Reader"
+description = "AUGUR"
 authors = [
     {name = "eric rodefeld",email = "eric.d.rodefeld@gmail.com"},
 ]
@@ -16,6 +16,8 @@ dependencies = [
     "geojson-pydantic>=1.1.1",
     "pymongo>=4.10.1",
     "jedi-language-server>=0.42.0",
+    "python-dotenv>=1.0.1",
+    "gunicorn==23.0.0",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"

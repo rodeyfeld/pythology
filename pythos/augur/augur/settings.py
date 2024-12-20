@@ -12,21 +12,23 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3pl=5$p)e__-j7uot#%=)!^3_hmt^^rykqd$kb-dl7@9i%%%dm'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'not-secret-key') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG_MODE', False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 
 # Application definition
@@ -85,10 +87,11 @@ WSGI_APPLICATION = 'augur.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "OPTIONS": {
-            "service": "augur_db_service",
-            "passfile": os.path.expanduser("~/.pg_passfile"),
-        },
+        "NAME": os.environ.get("DB_NAME", "augur"),
+        "USER": os.environ.get("DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"),
+        "HOST": os.environ.get("DB_HOST", "atlas"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 

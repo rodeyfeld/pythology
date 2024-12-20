@@ -41,4 +41,5 @@ Run the commands found in the base README.md to activate virtualenvironment.
 ```
 python manage.py migrate
 python manage.py runserver
-```
+```docker run -p 8000:8000 --name augur --network=mynetwork augur
+ gunicorn  --bind 0.0.0.0:8000 --workers 2 augur.wsgi

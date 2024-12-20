@@ -1,0 +1,3 @@
+CREATE DATABASE augur;
+CREATE DATABASE dreamflow;
+
