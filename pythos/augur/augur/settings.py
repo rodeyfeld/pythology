@@ -16,19 +16,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def parse_env_bool(val):
+    return str(val) == "True"
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
+SECURE_SSL_REDIRECT = parse_env_bool(os.environ.get('AUGUR_SECURE_SSL_REDIRECT', True))
+print(SECURE_SSL_REDIRECT)
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'not-secret-key') 
+SECRET_KEY = os.environ.get('AUGUR_SECRET_KEY', 'not-secret-key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG_MODE', False)
+DEBUG = parse_env_bool(os.environ.get('AUGUR_DEBUG', False))
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.environ.get('AUGUR_ALLOWED_HOSTS', '').split(',')
+print(ALLOWED_HOSTS)
+SESSION_COOKIE_SECURE = parse_env_bool(os.environ.get('AUGUR_SESSION_COOKIE_SECURE', True))
+CSRF_COOKIE_SECURE = parse_env_bool(os.environ.get('AUGUR_CSRF_COOKIE_SECURE', True))
 
 
 # Application definition
@@ -52,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,11 +95,11 @@ WSGI_APPLICATION = 'augur.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": os.environ.get("DB_NAME", "augur"),
-        "USER": os.environ.get("DB_USER", "postgres"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "postgres"),
-        "HOST": os.environ.get("DB_HOST", "atlas"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "NAME": os.environ.get("AUGUR_DB_NAME", "augur"),
+        "USER": os.environ.get("AUGUR_DB_USER", "postgres"),
+        "PASSWORD": os.environ.get("AUGUR_DB_PASSWORD", "postgres"),
+        "HOST": os.environ.get("AUGUR_DB_HOST", "atlas"),
+        "PORT": os.environ.get("AUGUR_DB_PORT", "5432"),
     }
 }
 
@@ -130,7 +138,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

@@ -93,3 +93,5 @@ typing-extensions==4.12.2
     #   pydantic-core
 urllib3==2.2.3
     # via requests
+whitenoise==6.8.1
+    # via augur (pyproject.toml)

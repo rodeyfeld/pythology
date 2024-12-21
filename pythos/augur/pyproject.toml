@@ -18,6 +18,7 @@ dependencies = [
     "jedi-language-server>=0.42.0",
     "python-dotenv>=1.0.1",
     "gunicorn==23.0.0",
+    "whitenoise==6.8.1",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"
