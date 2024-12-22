@@ -24,10 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-SECURE_SSL_REDIRECT = parse_env_bool(os.environ.get('AUGUR_SECURE_SSL_REDIRECT', True))
-print(SECURE_SSL_REDIRECT)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('AUGUR_SECRET_KEY', 'not-secret-key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') 
+
+SECURE_SSL_REDIRECT = parse_env_bool(os.environ.get('AUGUR_SECURE_SSL_REDIRECT', True))
+if SECURE_SSL_REDIRECT:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = parse_env_bool(os.environ.get('AUGUR_DEBUG', False))

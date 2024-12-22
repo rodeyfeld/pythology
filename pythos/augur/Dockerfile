@@ -12,4 +12,7 @@ COPY . /augur
 RUN pip install --upgrade pip pip-tools
 RUN pip-compile --output-file=requirements.txt pyproject.toml
 RUN pip-sync
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--forwarded-allow-ips=*", "augur.wsgi:application"]
