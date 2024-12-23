@@ -5,7 +5,7 @@ from augury.models import Dream, Study
 from requests.auth import HTTPBasicAuth
 from django.conf import settings
 
-DREAMFLOW_URL = settings.DREAMFLOW_URL
+DREAMFLOW_URL = ''.join([settings.DREAMFLOW_HOST, "/api/v1"])
 
 class Dreamer:
 
