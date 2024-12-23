@@ -39,7 +39,7 @@ print(ALLOWED_HOSTS)
 SESSION_COOKIE_SECURE = parse_env_bool(os.environ.get('AUGUR_SESSION_COOKIE_SECURE', True))
 CSRF_COOKIE_SECURE = parse_env_bool(os.environ.get('AUGUR_CSRF_COOKIE_SECURE', True))
 
-
+DREAMFLOW_URL = os.environ.get('AUGUR_DREAMFLOW_URL', '')
 # Application definition
 
 INSTALLED_APPS = [

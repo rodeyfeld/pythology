@@ -3,7 +3,9 @@ import uuid
 import requests
 from augury.models import Dream, Study
 from requests.auth import HTTPBasicAuth
-DREAMFLOW_URL = "http://localhost:8080/api/v1"
+from django.conf import settings
+
+DREAMFLOW_URL = settings.DREAMFLOW_URL
 
 class Dreamer:
 
