@@ -6,7 +6,7 @@ authors = [
     {name = "eric rodefeld",email = "eric.d.rodefeld@gmail.com"},
 ]
 dependencies = [
-    "apache-airflow[postgres,celery,redis,mongo]==2.10.2",
+    "apache-airflow[postgres,celery,redis,mongo]==2.10.4",
     "shapely==2.0.6",
 ]
 requires-python = "==3.11.*"

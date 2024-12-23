@@ -20,7 +20,7 @@ dependencies = [
     "gunicorn==23.0.0",
     "whitenoise==6.8.1",
 ]
-requires-python = "==3.11.*"
+requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "MIT"}
 
