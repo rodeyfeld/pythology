@@ -15,4 +15,4 @@ RUN pip-sync
 #CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 RUN python manage.py collectstatic
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--forwarded-allow-ips=*", "augur.wsgi:application"]
+CMD ["gunicorn", "--bind=0.0.0.0:8000", "--capture-output", "--log-level=debug", "--access-logfile=-", "--error-logfile=-", "--timeout=60", "--forwarded-allow-ips=*", "augur.wsgi:application"]
