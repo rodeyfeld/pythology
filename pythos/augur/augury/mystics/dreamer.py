@@ -6,11 +6,13 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 
 DREAMFLOW_URL = ''.join([settings.DREAMFLOW_HOST, "/api/v1"])
+DREAMFLOW_USER = settings.DREAMFLOW_USER
+DREAMFLOW_PASSWORD = settings.DREAMFLOW_PASSWORD
 
 class Dreamer:
 
     def get_auth(self):    
-        auth = HTTPBasicAuth("admin", "uGTgxN78bzBadxNq")
+        auth = HTTPBasicAuth(DREAMFLOW_USER, DREAMFLOW_PASSWORD)
         return auth
 
     def execute(self, study: Study, conf: dict[str, Any]):
