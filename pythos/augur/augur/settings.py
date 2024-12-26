@@ -35,14 +35,14 @@ if SECURE_SSL_REDIRECT:
 DEBUG = parse_env_bool(os.environ.get('AUGUR_DEBUG', False))
 
 ALLOWED_HOSTS = os.environ.get('AUGUR_ALLOWED_HOSTS', '').split(',')
-print(ALLOWED_HOSTS)
 SESSION_COOKIE_SECURE = parse_env_bool(os.environ.get('AUGUR_SESSION_COOKIE_SECURE', True))
 CSRF_COOKIE_SECURE = parse_env_bool(os.environ.get('AUGUR_CSRF_COOKIE_SECURE', True))
 
 DREAMFLOW_HOST = os.environ.get('AUGUR_DREAMFLOW_HOST', '')
 DREAMFLOW_USER = os.environ.get('AUGUR_DREAMFLOW_USER', '')
 DREAMFLOW_PASSWORD = os.environ.get('AUGUR_DREAMFLOW_PASSWORD', '')
-# Application definition
+
+CORS_ALLOWED_ORIGINS = os.environ.get('AUGUR_CORS_ALLOWED_ORIGINS', '').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_extensions',
+    'corsheaders',
     'core.apps.CoreConfig',
     'provider.apps.ProviderConfig',
     'augury.apps.AuguryConfig',
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

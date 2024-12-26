@@ -19,6 +19,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "gunicorn==23.0.0",
     "whitenoise==6.8.1",
+    "django-cors-headers==4.6.0",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
