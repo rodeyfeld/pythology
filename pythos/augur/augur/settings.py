@@ -42,7 +42,7 @@ DREAMFLOW_HOST = os.environ.get('AUGUR_DREAMFLOW_HOST', '')
 DREAMFLOW_USER = os.environ.get('AUGUR_DREAMFLOW_USER', '')
 DREAMFLOW_PASSWORD = os.environ.get('AUGUR_DREAMFLOW_PASSWORD', '')
 
-CORS_ALLOWED_ORIGINS = os.environ.get('AUGUR_CORS_ALLOWED_ORIGINS', '').split(',')
+CORS_ALLOWED_ORIGINS = os.environ.get('AUGUR_CORS_ALLOWED_ORIGINS', 'https://localhost').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
